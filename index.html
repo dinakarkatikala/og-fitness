@@ -65,7 +65,7 @@ async function showAppForSession(session){
   if(error || !profile || !['admin','staff'].includes(profile.role)){
     await supabaseClient.auth.signOut();
     document.getElementById('loginMessage').textContent =
-      'Access denied. This account needs an admin or staff role in public.profiles.';
+      'Profile check: ' + (error ? error.message : JSON.stringify(profile));
     appShell.style.display='none';
     loginScreen.style.display='flex';
     return;
