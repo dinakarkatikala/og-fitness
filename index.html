@@ -5,20 +5,36 @@
 <title>OG FITNESS | Gym Management</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#090909;--panel:#151515;--panel2:#1d1d1d;--gold:#d6ad55;--muted:#aaa;--line:#303030;--green:#4bc18b;--red:#ff6868}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f5f5f5;font:15px Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:11px 15px;background:var(--gold);color:#111;font-weight:700}.wrap{display:flex;min-height:100vh}.side{width:245px;background:#101010;border-right:1px solid var(--line);padding:25px 16px;flex-shrink:0}.brand{font-size:25px;font-weight:900;letter-spacing:2px;color:var(--gold);padding:5px 10px}.sub{font-size:10px;letter-spacing:3px;color:#aaa;padding:4px 10px 25px}.nav button{display:block;width:100%;text-align:left;background:transparent;color:#ccc;margin:5px 0;font-weight:500}.nav button.active,.nav button:hover{background:#292316;color:var(--gold)}main{padding:28px;width:100%;max-width:1500px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}.eyebrow{color:var(--gold);letter-spacing:2px;font-size:11px}.title{font-size:27px;margin:7px 0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.metric{font-size:27px;font-weight:800;margin-top:10px}.gold{color:var(--gold)}.section{display:none}.section.active{display:block}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.tablewrap{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:13px;border-bottom:1px solid var(--line)}th{color:var(--gold);font-size:12px}td{font-size:14px}.pill{padding:5px 9px;border-radius:20px;font-size:11px;background:#243c31;color:#7ee0b0}.expired{background:#482626;color:#ff9999}.soon{background:#493b20;color:#f1cb73}.field{display:flex;flex-direction:column;gap:7px;margin:10px 0;flex:1;min-width:190px}.field label{font-size:12px;color:#bbb}.field input,.field select{background:#0d0d0d;color:white;border:1px solid #393939;border-radius:8px;padding:12px;width:100%}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 14px}.wide{grid-column:1/-1}.secondary{background:#292929;color:#eee;border:1px solid #444}.danger{background:#542727;color:#ffb2b2}.small{padding:7px 10px;font-size:12px}.empty{padding:35px;text-align:center;color:#aaa}.notice{border:1px solid #69552c;background:#211b10;color:#e6cc8b;padding:13px;border-radius:10px;margin:15px 0;font-size:13px;line-height:1.5}.modal{display:none;position:fixed;inset:0;background:#000b;z-index:5;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modalbox{background:#171717;border:1px solid #554522;border-radius:16px;padding:22px;max-width:540px;width:100%;max-height:90vh;overflow:auto}.qrbox{background:white;padding:14px;display:inline-block;border-radius:10px;margin:10px 0}.hidden{display:none!important}
 @media(max-width:800px){.wrap{display:block}.side{width:100%;padding:12px}.brand{display:inline-block}.sub{display:inline-block;padding:0 8px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;width:auto}.grid{grid-template-columns:repeat(2,1fr)}main{padding:17px}.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.top{align-items:flex-start}.title{font-size:23px}}
 </style></head>
-<body><div class="wrap">
+<body>
+<div id="loginScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#090909">
+  <form id="loginForm" style="width:100%;max-width:410px;background:#151515;border:1px solid #554522;border-radius:16px;padding:28px">
+    <div style="font-size:25px;font-weight:900;letter-spacing:2px;color:#d6ad55">OG FITNESS</div>
+    <p style="color:#aaa;margin:8px 0 24px">Admin / Staff Login</p>
+    <label style="display:block;color:#bbb;font-size:13px;margin:12px 0 6px">Email address</label>
+    <input id="loginEmail" type="email" required autocomplete="username" placeholder="Enter your email"
+      style="width:100%;padding:13px;border-radius:8px;border:1px solid #393939;background:#0d0d0d;color:white">
+    <label style="display:block;color:#bbb;font-size:13px;margin:16px 0 6px">Password</label>
+    <input id="loginPassword" type="password" required autocomplete="current-password" placeholder="Enter your password"
+      style="width:100%;padding:13px;border-radius:8px;border:1px solid #393939;background:#0d0d0d;color:white">
+    <button id="loginButton" type="submit" style="width:100%;margin-top:20px">Login</button>
+    <p id="loginMessage" style="color:#ff9999;font-size:13px;line-height:1.5"></p>
+  </form>
+</div>
+<div class="wrap" id="appShell" style="display:none">
 <aside class="side"><div class="brand">OG FITNESS</div><div class="sub">TRAIN HARD · STAY STRONG</div><nav class="nav">
 <button class="active" data-tab="dashboard">▦ &nbsp; Dashboard</button><button data-tab="members">♙ &nbsp; Members</button><button data-tab="payments">₹ &nbsp; Payments</button><button data-tab="scan">▣ &nbsp; QR Check-in</button><button data-tab="plans">⚙ &nbsp; Membership plans</button>
 </nav><div class="notice">Narasaraopet, Andhra Pradesh<br>8340013394</div></aside>
-<main><div class="top"><div><div class="eyebrow">GYM MANAGEMENT PORTAL</div><div class="title" id="pageTitle">Dashboard overview</div><div class="muted">OG FITNESS · Owner workspace</div></div><button onclick="openMember()">+ Add member</button></div>
+<main><div class="top"><div><div class="eyebrow">GYM MANAGEMENT PORTAL</div><div class="title" id="pageTitle">Dashboard overview</div><div class="muted">OG FITNESS · Owner workspace</div></div><div class="row"><span id="signedInAs" class="muted"></span><button class="secondary small" onclick="signOut()">Sign out</button><button onclick="openMember()">+ Add member</button></div></div>
 <section id="dashboard" class="section active"><div class="grid">
 <div class="card"><div class="muted">Total members</div><div class="metric" id="mTotal">0</div></div><div class="card"><div class="muted">Active members</div><div class="metric gold" id="mActive">0</div></div><div class="card"><div class="muted">Expired memberships</div><div class="metric" id="mExpired">0</div></div><div class="card"><div class="muted">Payments recorded</div><div class="metric" id="mRevenue">₹0</div></div></div>
 <div class="card"><div class="row between"><h3>Memberships needing attention</h3><button class="secondary small" onclick="showTab('members')">View members</button></div><div id="attention"></div></div>
-<div class="notice">Prototype note: records are saved in this browser only. Do not use real member information until a secure shared database, staff logins, payment verification and WhatsApp provider are connected.</div></section>
+<div class="notice">Login is protected by Supabase Auth. Important: member and payment records in this version are still saved in this browser only; Supabase database sync must be connected before using real member data.</div></section>
 <section id="members" class="section"><div class="row between"><input id="search" placeholder="Search name or mobile..." oninput="renderMembers()" style="max-width:330px;background:#111;border:1px solid #444;color:white;padding:12px;border-radius:8px"><button onclick="openMember()">+ Register member</button></div><div class="tablewrap" style="margin-top:15px"><table><thead><tr><th>Member</th><th>Mobile</th><th>Plan</th><th>Start</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody id="memberRows"></tbody></table></div></section>
 <section id="payments" class="section"><div class="row between"><div><h3>Payment records</h3><div class="muted">Record cash, UPI or verified online payments</div></div><button onclick="openPayment()">+ Record payment</button></div><div class="tablewrap" style="margin-top:15px"><table><thead><tr><th>Date</th><th>Member</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead><tbody id="paymentRows"></tbody></table></div></section>
 <section id="scan" class="section"><div class="card"><h3>Member QR check-in</h3><p class="muted">Scan a member's personal QR code to check current membership status.</p><button onclick="startScan()">Start camera scanner</button> <button class="secondary" onclick="stopScan()">Stop</button><div id="reader" style="max-width:440px;margin-top:18px"></div><div id="scanResult" style="margin-top:15px"></div></div></section>
@@ -32,6 +48,57 @@
 <div class="modal" id="qrModal"><div class="modalbox" style="text-align:center"><button class="secondary small" style="float:right" onclick="closeModal('qrModal')">Close</button><h2 class="gold">OG FITNESS</h2><div class="muted">PERSONAL MEMBERSHIP PASS</div><h3 id="qrName"></h3><div class="qrbox"><div id="qrcode"></div></div><div id="qrInfo" class="muted"></div><p class="muted">Show this QR at the gym entrance</p><button onclick="window.print()">Print / Save pass</button></div></div>
 <div class="modal" id="paymentModal"><div class="modalbox"><div class="row between"><h2>Record payment</h2><button class="secondary small" onclick="closeModal('paymentModal')">✕</button></div><form id="paymentForm"><div class="field"><label>Member</label><select name="member" id="paymentMember" required></select></div><div class="field"><label>Amount (₹)</label><input name="amount" type="number" min="1" required></div><div class="field"><label>Method</label><select name="method"><option>Cash</option><option>UPI</option><option>Razorpay (verified)</option></select></div><div class="field"><label>Transaction/reference ID</label><input name="ref"></div><button>Save payment</button></form></div></div>
 <script>
+const SUPABASE_URL='https://casybqmfukemzjcsjhjk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_PmK9Hg6pMgdRmXkW9JgCGA_DYiDBoBE';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+async function showAppForSession(session){
+  const loginScreen=document.getElementById('loginScreen');
+  const appShell=document.getElementById('appShell');
+  if(!session){
+    appShell.style.display='none';
+    loginScreen.style.display='flex';
+    return;
+  }
+  const {data:profile,error}=await supabaseClient
+    .from('profiles').select('full_name, role').eq('id',session.user.id).maybeSingle();
+  if(error || !profile || !['admin','staff'].includes(profile.role)){
+    await supabaseClient.auth.signOut();
+    document.getElementById('loginMessage').textContent =
+      'Access denied. This account needs an admin or staff role in public.profiles.';
+    appShell.style.display='none';
+    loginScreen.style.display='flex';
+    return;
+  }
+  loginScreen.style.display='none';
+  appShell.style.display='flex';
+  document.getElementById('signedInAs').textContent =
+    (profile.full_name || session.user.email) + ' · ' + profile.role;
+  render();
+}
+
+document.getElementById('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const btn=document.getElementById('loginButton');
+  const msg=document.getElementById('loginMessage');
+  btn.disabled=true; btn.textContent='Signing in...'; msg.textContent='';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({
+    email:document.getElementById('loginEmail').value.trim(),
+    password:document.getElementById('loginPassword').value
+  });
+  btn.disabled=false; btn.textContent='Login';
+  if(error){msg.textContent=error.message;return;}
+  await showAppForSession(data.session);
+});
+async function signOut(){
+  await supabaseClient.auth.signOut();
+  document.getElementById('loginPassword').value='';
+  await showAppForSession(null);
+}
+supabaseClient.auth.onAuthStateChange((_event,session)=>{
+  setTimeout(()=>showAppForSession(session),0);
+});
+
 const KEY='ogfitness_demo_v1';
 let db=JSON.parse(localStorage.getItem(KEY)||'{"members":[],"payments":[],"plans":{"1 Month":2000,"3 Months":5000,"6 Months":null,"12 Months":17500}}');
 const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));render()};
@@ -58,5 +125,5 @@ document.getElementById('paymentForm').onsubmit=e=>{e.preventDefault();let f=new
 function editPlan(k){let v=prompt('Enter fee in rupees for '+k,db.plans[k]||'');if(v===null)return;if(v.trim()===''||!Number.isFinite(Number(v))||Number(v)<=0)return alert('Enter a valid amount.');db.plans[k]=Number(v);save()}
 let scanner=null;async function startScan(){try{if(!scanner)scanner=new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:230,height:230}},decoded=>{let m=db.members.find(x=>x.id===decoded);document.getElementById('scanResult').innerHTML=m?`<div class="card"><h2>${esc(m.name)}</h2><p>${esc(m.phone)} · ${m.plan}</p><h2 class="${status(m)==='Active'?'gold':''}">${status(m)}</h2><p>Valid until ${m.expiry}</p></div>`:'<div class="notice">QR not recognised. This code is not registered with OG FITNESS.</div>';});}catch(e){alert('Camera could not start. Allow camera access and use HTTPS, or test on localhost. '+e)}}
 async function stopScan(){if(scanner&&scanner.isScanning)await scanner.stop()}
-render();
+supabaseClient.auth.getSession().then(({data})=>showAppForSession(data.session));
 </script></body></html>
